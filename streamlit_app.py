@@ -3,8 +3,29 @@ import pickle
 import numpy as np
 
 # Load the trained model
-with open("regression_model.pkl", "rb") as file:
+import os
+import requests
+import streamlit as st
+
+# Link to the external model file
+MODEL_URL = "https://drive.google.com/uc?id=1wCUJl6ItEfAw564cYa53TA6jc7pHdQkKE"  # Replace with your Google Drive file's direct link
+
+# Download the model if not already present
+MODEL_PATH = "regression_model.pkl"
+if not os.path.exists(MODEL_PATH):
+    with st.spinner("Downloading the model..."):
+        response = requests.get(MODEL_URL, stream=True)
+        if response.status_code == 200:
+            with open(MODEL_PATH, "wb") as f:
+                f.write(response.content)
+            st.success("Model downloaded successfully!")
+        else:
+            st.error("Failed to download the model. Please check the link or try again.")
+
+# Load the trained model
+with open(MODEL_PATH, "rb") as file:
     model = pickle.load(file)
+
 
 # App title
 st.title("California Housing Price Predictor")
